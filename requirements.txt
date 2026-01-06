@@ -1,0 +1,10 @@
+﻿# Core
+pandas
+numpy
+
+
+
+
+# Web Crawling
+crawl4ai
+playwright
