@@ -1,12 +1,5 @@
 import os
-from dashboard.dash_app import app
+from dashboard.dash_app import create_dash_app
 
-# Gunicorn needs this
-server = app.server
+app = create_dash_app()
 
-if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=int(os.environ.get("PORT", 8050)),
-        debug=False
-    )
