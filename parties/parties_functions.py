@@ -81,6 +81,16 @@ def party_counts_aggregation(df_party_counts, PARTIES, PUBLISHERS):
     # Ensure 'date' column is datetime
     df_party_counts["date"] = pd.to_datetime(df_party_counts["date"])
 
+    # Rename publishers
+    publishers_renaming = {
+        "www.spiegel.de": "Der Spiegel",
+        "www.zeit.de": "Die Zeit",
+        "www.faz.net": "Die FAZ",
+        "www.sueddeutsche.de": "Süddeutsche Zeitung",
+        "www.bild.de": "Die Bild"
+    }
+    df_party_counts["publisher"] = df_party_counts["publisher"].replace(publishers_renaming)
+
     # Create weekly period column (weeks start on Monday)
     df_party_counts["week"] = df_party_counts["date"].dt.to_period("W-MON")
 
