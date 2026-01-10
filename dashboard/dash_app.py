@@ -58,33 +58,35 @@ def apply_font(fig):
 
 
 
-def create_dash_app():
-    app = Dash(__name__)
-
     # --- Layout ---
 def create_dash_app():
     app = Dash(__name__)
 
     app.layout = html.Div([
-        html.H1("Political Party Coverage in German Online News", style={**TEXT_STYLE, 'textAlign': 'center'}),
+        html.H1(
+        "Political Party Coverage in German Online News",
+        style={**TEXT_STYLE, 'textAlign': 'center'}
+    ),
 
-       html.P(
-           "The news we consume shapes what we think about and how we see the world. "
-            "Coverage of political parties is no exception. When some parties dominate the headlines, "
-            "this can influence public perception, opinions, and ultimately voting behavior. "
-            "This dashboard tracks how often political parties appear in major German online news, helping you see media bias.",
-           style={**TEXT_STYLE, 'lineHeight': '1.5', 'textAlign': 'center', 'marginBottom': '20px'}
-        ),
+    html.P(
+        "The news we consume shapes what we think about and how we see the world. "
+        "Coverage of political parties is no exception. When some parties dominate the headlines, "
+        "this can influence public perception, opinions, and ultimately voting behavior. "
+        "This dashboard tracks how often political parties appear in major German online news, helping you see media bias.",
+        style={**TEXT_STYLE, 'lineHeight': '1.5', 'textAlign': 'center', 'margin': '20px 0'}
+    ),
 
-        
-        html.H3("Total Political Party Mentions in German Media", style=TEXT_STYLE),
-        html.P(
-            "Explore how often political parties have been mentioned in Germany’s major online newspapers since August 2025 "
-            "(Der Spiegel, Die Zeit, Die FAZ, Süddeutsche Zeitung, and Die Bild). "
-            "Use the controls to select which parties and publishers to include, and switch between viewing the Total Mentions by Party "
-            "or the percentage Distribution of Mentions by Party. See at a glance which parties dominate the media conversation!",
-            style={**TEXT_STYLE, 'lineHeight': '1.5'}
-        ),
+    html.H3(
+        "Total Political Party Mentions in German Media",
+        style={**TEXT_STYLE, 'marginTop': '30px'}
+    ),
+    html.P(
+        "Explore how often political parties have been mentioned in Germany’s major online newspapers since August 2025 "
+        "(Der Spiegel, Die Zeit, Die FAZ, Süddeutsche Zeitung, and Die Bild). "
+        "Use the controls to select which parties and publishers to include, and switch between viewing the Total Mentions by Party "
+        "or the percentage Distribution of Mentions by Party. See at a glance which parties dominate the media conversation!",
+        style={**TEXT_STYLE, 'lineHeight': '1.5'}
+    ),
 
         # --- Box for Main Graph + Controls ---
         html.Div([
