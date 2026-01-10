@@ -1,0 +1,49 @@
+name: Backend Automation
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  backend_pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Checkout repository
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+
+    # 2. Set up Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    # 3. Install dependencies
+    - name: Install dependencies
+      run: |
+        set -e  # Fail if any command fails
+        python -m pip install --upgrade pip
+        pip install -r requirements.crawling.txt
+        pip install -r requirements.preprocessing.txt
+        pip install -r requirements.parties.txt
+        playwright install
+
+    # 4. Run Crawling
+    - name: Run Crawling
+      run: |
+        set -e
+        python -m crawling.crawling_main
+
+    # 5. Run Preprocessing
+    - name: Run Preprocessing
+      run: |
+        set -e
+        python -m preprocessing.total_preprocessing
+
+    # 6. Run Parties Analysis
+    - name: Run Parties Analysis
+      run: |
+        set -e
+        python -m parties.parties_main
