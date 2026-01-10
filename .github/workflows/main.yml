@@ -32,19 +32,19 @@ jobs:
     - name: Run Crawling
       run: |
         set -e
-        python -m crawling/crawling_main
+        python -m crawling.crawling_main
 
     # 5. Run Preprocessing
     - name: Run Preprocessing
       run: |
         set -e
-        python -m preprocessing/preprocessing_main
+        python -m preprocessing.preprocessing_main
 
     # 6. Run Parties Analysis
     - name: Run Parties Analysis
       run: |
         set -e
-        python -m parties/parties_main
+        python -m parties.parties_main
 
     # 7. Commit and push updated datasets
     - name: Commit updated datasets
