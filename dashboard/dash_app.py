@@ -1,4 +1,3 @@
-# dashboard/dash_app.py
 import dash
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
@@ -6,85 +5,125 @@ import plotly.express as px
 import pandas as pd
 from pathlib import Path
 
+# Load Config Parameters
+from dashboard.dash_config import (
+    COLOR_CODING,
+    VIS_START_DATE,
+    DF_ELECTION,
+    FONT_FAMILY,
+    TEXT_COLOR
+)
+
+# --- Config Objects Assigning ---
+color_coding = COLOR_CODING
+df_election = DF_ELECTION
+vis_start_date = VIS_START_DATE
+
+# Global text style for HTML elements
+TEXT_STYLE = {"fontFamily": FONT_FAMILY, "color": TEXT_COLOR}
+
 # --- Load dataset ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 dataset_path = BASE_DIR / "datasets" / "PARTIES_ANALYSIS.csv"
 df_party_analysis = pd.read_csv(dataset_path)
 
+# --- Define analysis start date ---
+df_party_analysis["week_start"] = pd.to_datetime(
+    df_party_analysis["week_start"], format="%Y-%m-%d", errors="coerce"
+)
+
+df_party_analysis = df_party_analysis[
+    df_party_analysis["week_start"] >= VIS_START_DATE
+].reset_index(drop=True)
+
 # After reading df_party_analysis
 df_visibility = df_party_analysis.copy()
-
-# Example election dataframe — replace with real values if you have them
 party_columns = [col.replace("_total", "") for col in df_visibility.columns if col.endswith("_total")]
-df_election = pd.DataFrame({
-    "party": party_columns,
-    "bundestag_share": [0.25, 0.20, 0.15, 0.10, 0.15, 0.15]  # Replace with real election percentages
-})
 
 
+def apply_font(fig):
+    """Helper function to apply consistent font to Plotly figures."""
+    fig.update_layout(
+        font=dict(family=FONT_FAMILY, color=TEXT_COLOR),
+        title_font=dict(family=FONT_FAMILY, color=TEXT_COLOR),
+        legend_font=dict(family=FONT_FAMILY, color=TEXT_COLOR),
+        xaxis_title_font=dict(family=FONT_FAMILY, color=TEXT_COLOR),
+        yaxis_title_font=dict(family=FONT_FAMILY, color=TEXT_COLOR)
+    )
+    return fig
 
-color_coding = {
-    'CDU/CSU': 'black',
-    'SPD': 'red',
-    'Grüne': 'green',
-    'FDP': 'yellow',
-    'AfD': 'blue',
-    'Die Linke': 'purple'
-}
+
 
 def create_dash_app():
     app = Dash(__name__)
 
     # --- Layout ---
     app.layout = html.Div([
-        html.H1("Partisan Media Bias Dashboard", style={'textAlign': 'center'}),
-        html.H3("Total Political Party Mentions in German Media"),
+        html.H1("Partisan Media Bias Dashboard", style={**TEXT_STYLE, 'textAlign': 'center'}),
+        html.H3("Total Political Party Mentions in German Media", style=TEXT_STYLE),
         html.P(
-            "Explore how often political parties have been mentioned in Germany’s major online newspapers..."
+            "Explore how often political parties have been mentioned in Germany’s major online newspapers since August 2025"
+            "(Der Spiegel, Die Zeit, Die FAZ, Süddeutsche Zeitung, and Die Bild). "
+            "Use the controls to select which parties and publishers to include, and switch between viewing the Total Mentions by Party "
+            "or the percentage Distribution of Mentions by Party. See at a glance which parties dominate the media conversation!",
+            style=TEXT_STYLE
         ),
 
-        # --- Controls ---
+        # --- Controls Section ---
         html.Div([
+            # Row 1: Select Graph
             html.Div([
-                html.Label(html.B("Select Graph:")),
+                html.Label("Select Graph:", style=TEXT_STYLE),
                 dcc.RadioItems(
                     id='graph-selector',
                     options=[
                         {'label': 'Total Mentions by Party', 'value': 'total'},
-                        {'label': 'Total Distribution of Mentions by Party (%)', 'value': 'percentage'}
+                        {'label': 'Percentage Distribution of Mentions', 'value': 'percentage'}
                     ],
                     value='total',
-                    inline=True
-                ),
-            ], style={'display': 'inline-block', 'verticalAlign': 'top'}),
+                    labelStyle={'display': 'inline-block', 'margin-right': '30px'}  # side by side
+                )
+            ], style={'margin-bottom': '20px', 'display': 'flex', 'justify-content': 'center'}),
 
+            # Row 2: Publishers (left) and Parties (middle)
             html.Div([
-                html.Label(html.B("Select Publishers:")),
-                dcc.Checklist(
-                    id='publisher-selector',
-                    options=[{'label': pub, 'value': pub} for pub in df_visibility['publisher'].unique()],
-                    value=df_visibility['publisher'].unique().tolist(),
-                    inline=True
-                ),
-            ], style={'display': 'inline-block', 'verticalAlign': 'top'}),
+                # Left: Publishers
+                html.Div([
+                    html.Label("Select Publishers:", style=TEXT_STYLE),
+                    dcc.Checklist(
+                        id='publisher-selector',
+                        options=[{'label': pub, 'value': pub} for pub in df_visibility['publisher'].unique()],
+                        value=df_visibility['publisher'].unique().tolist(),
+                        labelStyle={'display': 'block', 'margin-bottom': '5px'},  # each on its own line
+                    )
+                ], style={'flex': '1', 'margin-right': '40px'}),
 
-            html.Div([
-                html.Label(html.B("Select Parties:")),
-                dcc.Checklist(
-                    id='party-selector',
-                    options=[{'label': p, 'value': p} for p in party_columns],
-                    value=party_columns,
-                    inline=True
-                ),
-            ], style={'display': 'inline-block', 'verticalAlign': 'top'})
-        ], style={'width': '100%', 'display': 'flex', 'justifyContent': 'space-between', 'marginBottom': '20px'}),
+                # Middle: Parties
+                html.Div([
+                    html.Label("Select Parties:", style=TEXT_STYLE),
+                    dcc.Checklist(
+                        id='party-selector',
+                        options=[{'label': p, 'value': p} for p in party_columns],
+                        value=party_columns,
+                        labelStyle={'display': 'block', 'margin-bottom': '5px'},  # each on its own line
+                    )
+                ], style={'flex': '1'}),
+            ], style={'display': 'flex', 'justify-content': 'flex-start', 'margin-bottom': '20px'})
+        ]),
 
+        # --- Main Graph ---
         dcc.Graph(id='main-graph'),
 
-        # --- Area chart ---
-        html.H3("Evolution of Political Party Coverage Over Time"),
+        # --- Area Chart ---
+        html.H3("Evolution of Political Party Coverage in Online Media Over Time", style=TEXT_STYLE),
+        html.P(
+            "Track how media coverage of political parties has evolved over time. "
+            "Choose whether to view absolute mentions or percentages, and filter by specific parties and publishers "
+            "to see trends and shifts in the media conversation.",
+            style=TEXT_STYLE
+        ),
         html.Div([
-            html.Label(html.B("Select Display Mode:")),
+            html.Label("Select Display Mode:", style=TEXT_STYLE),
             dcc.RadioItems(
                 id='display-mode',
                 options=[
@@ -92,25 +131,28 @@ def create_dash_app():
                     {'label': 'Percentages', 'value': 'percent'}
                 ],
                 value='percent',
-                inline=True
+                labelStyle={'display': 'inline-block', 'margin-right': '30px'}
             ),
-            html.Label(html.B("Select Publishers:")),
+            html.Label("Select Publishers:", style=TEXT_STYLE),
             dcc.Checklist(
                 id='area-publisher-selector',
                 options=[{'label': pub, 'value': pub} for pub in df_visibility['publisher'].unique()],
                 value=df_visibility['publisher'].unique().tolist(),
-                inline=True
+                labelStyle={'display': 'block', 'margin-bottom': '5px'}
             ),
-            html.Label(html.B("Select Parties:")),
+            html.Label("Select Parties:", style=TEXT_STYLE),
             dcc.Checklist(
                 id='area-party-selector',
                 options=[{'label': p, 'value': p} for p in party_columns],
                 value=party_columns,
-                inline=True
+                labelStyle={'display': 'block', 'margin-bottom': '5px'}
             )
-        ], style={'marginBottom': '20px'}),
+        ], style={'margin-bottom': '20px'}),
+
         dcc.Graph(id='area-chart')
-    ])
+
+    ], style={"fontFamily": FONT_FAMILY, "color": TEXT_COLOR})  # Global fallback style
+
 
     # --- Callbacks ---
 
@@ -134,8 +176,6 @@ def create_dash_app():
             df_totals = pd.DataFrame({'party': parties, 'total': filtered_totals.values})
             fig = px.bar(df_totals, x='party', y='total', color='party', color_discrete_map=color_coding,
                          labels={'party': 'Party', 'total': 'Total Mentions'}, title="Total Mentions by Party")
-            fig.update_layout(template="plotly_white")
-            return fig
         else:
             sum_all = filtered_totals.sum()
             percentages = (filtered_totals / sum_all * 100) if sum_all > 0 else filtered_totals * 0
@@ -154,8 +194,9 @@ def create_dash_app():
                          category_orders={'type': ['Media Mentions', 'Election Results']},
                          labels={'percentage': 'Percentage (%)', 'party': 'Party', 'type': 'Source'},
                          title="Comparison: Media Mentions vs. Election Results (%)")
-            fig.update_layout(template="plotly_white", yaxis=dict(range=[0, 100]), legend_title_text="Source")
-            return fig
+            fig.update_layout(yaxis=dict(range=[0, 100]), legend_title_text="Source")
+
+        return apply_font(fig)
 
     @app.callback(
         Output('area-chart', 'figure'),
@@ -200,7 +241,8 @@ def create_dash_app():
                       labels={'week_start': 'Week Start', 'value': yaxis_label, 'party': 'Party'},
                       title=f"Party Mentions Over Time ({'Percentages' if display_mode == 'percent' else 'Absolute'})")
         fig.update_layout(xaxis_title="Week Start", yaxis_title=yaxis_label,
-                          legend_title="Party", template="plotly_white", yaxis=dict(range=y_range))
-        return fig
+                          legend_title="Party", yaxis=dict(range=y_range))
+
+        return apply_font(fig)
 
     return app
