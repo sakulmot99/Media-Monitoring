@@ -141,6 +141,7 @@ def create_dash_app():
             'margin-bottom': '40px',
             'backgroundColor': '#f9f9f9'
         }),
+    ])
 
 # --- Title & description ---
 html.H3("Evolution of Political Party Coverage in Online Media Over Time", style=TEXT_STYLE),
