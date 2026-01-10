@@ -47,3 +47,14 @@ jobs:
       run: |
         set -e
         python -m parties.parties_main
+
+    # 7. Commit and push updated datasets
+    - name: Commit updated datasets
+      run: |
+        set -e
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+        git add datasets/*.csv
+        git commit -m "Automated dataset update [skip ci]" || echo "No changes to commit"
+        git push
