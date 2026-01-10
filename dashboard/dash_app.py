@@ -49,7 +49,7 @@ def apply_font(fig):
         legend_font=dict(
             family=FONT_FAMILY,
             color=TEXT_COLOR,
-            size=14  # ⬆ legend font increased
+            size=14
         ),
         xaxis_title_font=dict(family=FONT_FAMILY, color=TEXT_COLOR),
         yaxis_title_font=dict(family=FONT_FAMILY, color=TEXT_COLOR)
@@ -57,38 +57,37 @@ def apply_font(fig):
     return fig
 
 
-
-    # --- Layout ---
 def create_dash_app():
     app = Dash(__name__)
 
+    # --- Layout ---
     app.layout = html.Div([
+
+        # --- Header ---
         html.H1(
-        "Political Party Coverage in German Online News",
-        style={**TEXT_STYLE, 'textAlign': 'center'}
-    ),
+            "Political Party Coverage in German Online News",
+            style={**TEXT_STYLE, 'textAlign': 'center'}
+        ),
+        html.P(
+            "The news we consume shapes what we think about and how we see the world. "
+            "Coverage of political parties is no exception. When some parties dominate the headlines, "
+            "this can influence public perception, opinions, and ultimately voting behavior. "
+            "This dashboard tracks how often political parties appear in major German online news, helping you see media bias.",
+            style={**TEXT_STYLE, 'lineHeight': '1.5', 'textAlign': 'center', 'margin': '20px 0'}
+        ),
 
-    html.P(
-        "The news we consume shapes what we think about and how we see the world. "
-        "Coverage of political parties is no exception. When some parties dominate the headlines, "
-        "this can influence public perception, opinions, and ultimately voting behavior. "
-        "This dashboard tracks how often political parties appear in major German online news, helping you see media bias.",
-        style={**TEXT_STYLE, 'lineHeight': '1.5', 'textAlign': 'center', 'margin': '20px 0'}
-    ),
-
-    html.H3(
-        "Total Political Party Mentions in German Media",
-        style={**TEXT_STYLE, 'marginTop': '30px'}
-    ),
-    html.P(
-        "Explore how often political parties have been mentioned in Germany’s major online newspapers since August 2025 "
-        "(Der Spiegel, Die Zeit, Die FAZ, Süddeutsche Zeitung, and Die Bild). "
-        "Use the controls to select which parties and publishers to include, and switch between viewing the Total Mentions by Party "
-        "or the percentage Distribution of Mentions by Party. See at a glance which parties dominate the media conversation!",
-        style={**TEXT_STYLE, 'lineHeight': '1.5'}
-    ),
-
-        # --- Box for Main Graph + Controls ---
+        # --- Total Mentions Section ---
+        html.H3(
+            "Total Political Party Mentions in German Media",
+            style={**TEXT_STYLE, 'marginTop': '30px'}
+        ),
+        html.P(
+            "Explore how often political parties have been mentioned in Germany’s major online newspapers since August 2025 "
+            "(Der Spiegel, Die Zeit, Die FAZ, Süddeutsche Zeitung, and Die Bild). "
+            "Use the controls to select which parties and publishers to include, and switch between viewing the Total Mentions by Party "
+            "or the percentage Distribution of Mentions by Party. See at a glance which parties dominate the media conversation!",
+            style={**TEXT_STYLE, 'lineHeight': '1.5'}
+        ),
         html.Div([
             # Graph Selection
             html.Div([
@@ -103,8 +102,7 @@ def create_dash_app():
                     inline=True,
                     labelStyle={'margin-right': '15px'}
                 )
-            ],
-            style={'display': 'flex', 'justifyContent': 'center', 'lineHeight': '1.5', 'margin-bottom': '15px'}),
+            ], style={'display': 'flex', 'justifyContent': 'center', 'lineHeight': '1.5', 'margin-bottom': '15px'}),
 
             # Main Graph
             dcc.Graph(id='main-graph'),
@@ -133,89 +131,80 @@ def create_dash_app():
                     )
                 ], style={'flex': '1'})
             ], style={'display': 'flex', 'justifyContent': 'space-between', 'lineHeight': '1.5'})
-        ],
-        style={
+        ], style={
             'border': '1px solid lightgrey',
             'padding': '20px',
             'borderRadius': '8px',
             'margin-bottom': '40px',
             'backgroundColor': '#f9f9f9'
         }),
-    ])
 
-# --- Title & description ---
-html.H3("Evolution of Political Party Coverage in Online Media Over Time", style=TEXT_STYLE),
-html.P(
-    "Track how media coverage of political parties has evolved over time. "
-    "Choose whether to view absolute mentions or percentages, and filter by specific parties and publishers "
-    "to see trends and shifts in the media conversation.",
-    style={**TEXT_STYLE, 'lineHeight': '1.5'}
-),
-
-# --- Grey box for controls + graph ---
-html.Div([
-    # Display Mode Selection
-    html.Div([
-        html.Label("Select Display Mode:", style=TEXT_STYLE),
-        dcc.RadioItems(
-            id='display-mode',
-            options=[
-                {'label': 'Absolute counts', 'value': 'absolute'},
-                {'label': 'Percentages', 'value': 'percent'}
-            ],
-            value='percent',
-            inline=True,
-            labelStyle={'margin-right': '15px'}
-        )
-    ], style={'display': 'flex', 'justifyContent': 'center', 'margin-bottom': '15px'}),
-
-    # Area Chart
-    dcc.Graph(id='area-chart'),
-
-    # Filters
-    html.Div([
+        # --- Evolution Over Time Section ---
+        html.H3("Evolution of Political Party Coverage in Online Media Over Time", style=TEXT_STYLE),
+        html.P(
+            "Track how media coverage of political parties has evolved over time. "
+            "Choose whether to view absolute mentions or percentages, and filter by specific parties and publishers "
+            "to see trends and shifts in the media conversation.",
+            style={**TEXT_STYLE, 'lineHeight': '1.5'}
+        ),
         html.Div([
-            html.Label("Select Publishers:", style=TEXT_STYLE),
-            dcc.Checklist(
-                id='area-publisher-selector',
-                options=[{'label': pub, 'value': pub} for pub in df_visibility['publisher'].unique()],
-                value=df_visibility['publisher'].unique().tolist(),
-                inline=True,
-                labelStyle={'margin-right': '15px'}
-            )
-        ], style={'flex': '1'}),
+            # Display Mode Selection
+            html.Div([
+                html.Label("Select Display Mode:", style=TEXT_STYLE),
+                dcc.RadioItems(
+                    id='display-mode',
+                    options=[
+                        {'label': 'Absolute counts', 'value': 'absolute'},
+                        {'label': 'Percentages', 'value': 'percent'}
+                    ],
+                    value='percent',
+                    inline=True,
+                    labelStyle={'margin-right': '15px'}
+                )
+            ], style={'display': 'flex', 'justifyContent': 'center', 'margin-bottom': '15px'}),
 
-        html.Div([
-            html.Label("Select Parties:", style=TEXT_STYLE),
-            dcc.Checklist(
-                id='area-party-selector',
-                options=[{'label': p, 'value': p} for p in party_columns],
-                value=party_columns,
-                inline=True,
-                labelStyle={'margin-right': '15px'}
-            )
-        ], style={'flex': '1'})
-    ], style={'display': 'flex', 'justifyContent': 'space-between'})
-],
-style={
-    'border': '1px solid lightgrey',
-    'padding': '20px',
-    'borderRadius': '8px',
-    'margin-bottom': '40px',
-    'backgroundColor': '#f9f9f9'
-})
+            # Area Chart
+            dcc.Graph(id='area-chart'),
 
+            # Filters
+            html.Div([
+                html.Div([
+                    html.Label("Select Publishers:", style=TEXT_STYLE),
+                    dcc.Checklist(
+                        id='area-publisher-selector',
+                        options=[{'label': pub, 'value': pub} for pub in df_visibility['publisher'].unique()],
+                        value=df_visibility['publisher'].unique().tolist(),
+                        inline=True,
+                        labelStyle={'margin-right': '15px'}
+                    )
+                ], style={'flex': '1'}),
 
+                html.Div([
+                    html.Label("Select Parties:", style=TEXT_STYLE),
+                    dcc.Checklist(
+                        id='area-party-selector',
+                        options=[{'label': p, 'value': p} for p in party_columns],
+                        value=party_columns,
+                        inline=True,
+                        labelStyle={'margin-right': '15px'}
+                    )
+                ], style={'flex': '1'})
+            ], style={'display': 'flex', 'justifyContent': 'space-between'})
+        ], style={
+            'border': '1px solid lightgrey',
+            'padding': '20px',
+            'borderRadius': '8px',
+            'margin-bottom': '40px',
+            'backgroundColor': '#f9f9f9'
+        })
+    ])  # End of outer html.Div
 
     # --- Callbacks ---
-
     @app.callback(
         Output('main-graph', 'figure'),
-        [
-            Input('graph-selector', 'value'),
-            Input('party-selector', 'value'),
-            Input('publisher-selector', 'value')
-        ]
+        [Input('graph-selector', 'value'),
+         Input('party-selector', 'value'),
+         Input('publisher-selector', 'value')]
     )
     def update_main_graph(selected_graph, selected_parties, selected_publishers):
         if not selected_parties or not selected_publishers:
@@ -253,11 +242,9 @@ style={
 
     @app.callback(
         Output('area-chart', 'figure'),
-        [
-            Input('area-publisher-selector', 'value'),
-            Input('display-mode', 'value'),
-            Input('area-party-selector', 'value')
-        ]
+        [Input('area-publisher-selector', 'value'),
+         Input('display-mode', 'value'),
+         Input('area-party-selector', 'value')]
     )
     def update_area_chart(selected_publishers, display_mode, selected_parties):
         if not selected_publishers or not selected_parties:
