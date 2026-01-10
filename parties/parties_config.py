@@ -71,9 +71,5 @@ PARTIES = ["CDU/CSU", "SPD", "Grüne", "FDP", "AfD", "Die Linke"]
 # ------------------------------
 # List of media publishers
 # ------------------------------
-# You can use this list to filter articles, scrape only certain sites,
-# or categorize data by source.
-PUBLISHERS = [
-    "www.faz.net", "www.welt.de", "www.spiegel.de",
-    "www.zeit.de", "www.sueddeutsche.de", "www.bild.de"
-]
+
+PUBLISHERS = ["Der Spiegel", "Die Zeit", "Die FAZ", "Süddeutsche Zeitung", "Die Bild"]
