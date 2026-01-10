@@ -58,20 +58,23 @@ def create_dash_app():
     app = Dash(__name__)
 
     # --- Layout ---
+def create_dash_app():
+    app = Dash(__name__)
+
     app.layout = html.Div([
         html.H1("Partisan Media Bias Dashboard", style={**TEXT_STYLE, 'textAlign': 'center'}),
         html.H3("Total Political Party Mentions in German Media", style=TEXT_STYLE),
         html.P(
-            "Explore how often political parties have been mentioned in Germany’s major online newspapers since August 2025"
+            "Explore how often political parties have been mentioned in Germany’s major online newspapers since August 2025 "
             "(Der Spiegel, Die Zeit, Die FAZ, Süddeutsche Zeitung, and Die Bild). "
             "Use the controls to select which parties and publishers to include, and switch between viewing the Total Mentions by Party "
             "or the percentage Distribution of Mentions by Party. See at a glance which parties dominate the media conversation!",
-            style=TEXT_STYLE
+            style={**TEXT_STYLE, 'lineHeight': '1.5'}
         ),
 
-        # --- Controls Section ---
+        # --- Box for Main Graph + Controls ---
         html.Div([
-            # Row 1: Select Graph
+            # Graph Selection
             html.Div([
                 html.Label("Select Graph:", style=TEXT_STYLE),
                 dcc.RadioItems(
@@ -81,77 +84,110 @@ def create_dash_app():
                         {'label': 'Percentage Distribution of Mentions', 'value': 'percentage'}
                     ],
                     value='total',
-                    labelStyle={'display': 'inline-block', 'margin-right': '30px'}  # side by side
+                    inline=True,
+                    labelStyle={'margin-right': '15px'}
                 )
-            ], style={'margin-bottom': '20px', 'display': 'flex', 'justify-content': 'center'}),
+            ],
+            style={'display': 'flex', 'justifyContent': 'center', 'lineHeight': '1.5', 'margin-bottom': '15px'}),
 
-            # Row 2: Publishers (left) and Parties (middle)
+            # Main Graph
+            dcc.Graph(id='main-graph'),
+
+            # Publishers & Parties Filters side-by-side
             html.Div([
-                # Left: Publishers
                 html.Div([
                     html.Label("Select Publishers:", style=TEXT_STYLE),
                     dcc.Checklist(
                         id='publisher-selector',
                         options=[{'label': pub, 'value': pub} for pub in df_visibility['publisher'].unique()],
                         value=df_visibility['publisher'].unique().tolist(),
-                        labelStyle={'display': 'block', 'margin-bottom': '5px'},  # each on its own line
+                        inline=True,
+                        labelStyle={'margin-right': '15px'}
                     )
-                ], style={'flex': '1', 'margin-right': '40px'}),
+                ], style={'flex': '1'}),
 
-                # Middle: Parties
                 html.Div([
                     html.Label("Select Parties:", style=TEXT_STYLE),
                     dcc.Checklist(
                         id='party-selector',
                         options=[{'label': p, 'value': p} for p in party_columns],
                         value=party_columns,
-                        labelStyle={'display': 'block', 'margin-bottom': '5px'},  # each on its own line
+                        inline=True,
+                        labelStyle={'margin-right': '15px'}
+                    )
+                ], style={'flex': '1'})
+            ], style={'display': 'flex', 'justifyContent': 'space-between', 'lineHeight': '1.5'})
+        ],
+        style={
+            'border': '1px solid lightgrey',
+            'padding': '20px',
+            'borderRadius': '8px',
+            'margin-bottom': '40px',
+            'backgroundColor': '#f9f9f9'
+        }),
+
+        # --- Box for Area Chart + Controls ---
+        html.Div([
+            html.H3("Evolution of Political Party Coverage in Online Media Over Time", style=TEXT_STYLE),
+            html.P(
+                "Track how media coverage of political parties has evolved over time. "
+                "Choose whether to view absolute mentions or percentages, and filter by specific parties and publishers "
+                "to see trends and shifts in the media conversation.",
+                style={**TEXT_STYLE, 'lineHeight': '1.5'}
+            ),
+
+            # Display Mode Selection
+            html.Div([
+                html.Label("Select Display Mode:", style=TEXT_STYLE),
+                dcc.RadioItems(
+                    id='display-mode',
+                    options=[
+                        {'label': 'Absolute counts', 'value': 'absolute'},
+                        {'label': 'Percentages', 'value': 'percent'}
+                    ],
+                    value='percent',
+                    inline=True,
+                    labelStyle={'margin-right': '15px'}
+                )
+            ], style={'display': 'flex', 'justifyContent': 'center', 'lineHeight': '1.5', 'margin-bottom': '15px'}),
+
+            # Area Chart
+            dcc.Graph(id='area-chart'),
+
+            # Publishers & Parties Filters side-by-side
+            html.Div([
+                html.Div([
+                    html.Label("Select Publishers:", style=TEXT_STYLE),
+                    dcc.Checklist(
+                        id='area-publisher-selector',
+                        options=[{'label': pub, 'value': pub} for pub in df_visibility['publisher'].unique()],
+                        value=df_visibility['publisher'].unique().tolist(),
+                        inline=True,
+                        labelStyle={'margin-right': '15px'}
                     )
                 ], style={'flex': '1'}),
-            ], style={'display': 'flex', 'justify-content': 'flex-start', 'margin-bottom': '20px'})
-        ]),
 
-        # --- Main Graph ---
-        dcc.Graph(id='main-graph'),
-
-        # --- Area Chart ---
-        html.H3("Evolution of Political Party Coverage in Online Media Over Time", style=TEXT_STYLE),
-        html.P(
-            "Track how media coverage of political parties has evolved over time. "
-            "Choose whether to view absolute mentions or percentages, and filter by specific parties and publishers "
-            "to see trends and shifts in the media conversation.",
-            style=TEXT_STYLE
-        ),
-        html.Div([
-            html.Label("Select Display Mode:", style=TEXT_STYLE),
-            dcc.RadioItems(
-                id='display-mode',
-                options=[
-                    {'label': 'Absolute counts', 'value': 'absolute'},
-                    {'label': 'Percentages', 'value': 'percent'}
-                ],
-                value='percent',
-                labelStyle={'display': 'inline-block', 'margin-right': '30px'}
-            ),
-            html.Label("Select Publishers:", style=TEXT_STYLE),
-            dcc.Checklist(
-                id='area-publisher-selector',
-                options=[{'label': pub, 'value': pub} for pub in df_visibility['publisher'].unique()],
-                value=df_visibility['publisher'].unique().tolist(),
-                labelStyle={'display': 'block', 'margin-bottom': '5px'}
-            ),
-            html.Label("Select Parties:", style=TEXT_STYLE),
-            dcc.Checklist(
-                id='area-party-selector',
-                options=[{'label': p, 'value': p} for p in party_columns],
-                value=party_columns,
-                labelStyle={'display': 'block', 'margin-bottom': '5px'}
-            )
-        ], style={'margin-bottom': '20px'}),
-
-        dcc.Graph(id='area-chart')
-
-    ], style={"fontFamily": FONT_FAMILY, "color": TEXT_COLOR})  # Global fallback style
+                html.Div([
+                    html.Label("Select Parties:", style=TEXT_STYLE),
+                    dcc.Checklist(
+                        id='area-party-selector',
+                        options=[{'label': p, 'value': p} for p in party_columns],
+                        value=party_columns,
+                        inline=True,
+                        labelStyle={'margin-right': '15px'}
+                    )
+                ], style={'flex': '1'})
+            ], style={'display': 'flex', 'justifyContent': 'space-between', 'lineHeight': '1.5'})
+        ],
+        style={
+            'border': '1px solid lightgrey',
+            'padding': '20px',
+            'borderRadius': '8px',
+            'margin-bottom': '40px',
+            'backgroundColor': '#f9f9f9'
+        })
+    ],
+    style={"fontFamily": FONT_FAMILY, "color": TEXT_COLOR, 'lineHeight': '1.5'})
 
 
     # --- Callbacks ---
