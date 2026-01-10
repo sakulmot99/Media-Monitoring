@@ -1,6 +1,6 @@
 dash>=3.3.0
-plotly>=5.15.0
-pandas>=2.0
+plotly
+pandas
 numpy
 python-dotenv
 gunicorn
