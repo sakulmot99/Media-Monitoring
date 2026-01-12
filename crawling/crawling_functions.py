@@ -56,6 +56,8 @@ async def seed_urls(urls):
 
 # Extract article links
 
+from urllib.parse import urlparse, urljoin
+
 def extract_article_links(all_links_dict, article_identifiers, existing_df_urls=None):
     """
     Filter links that match article patterns and remove already existing URLs.
@@ -76,16 +78,25 @@ def extract_article_links(all_links_dict, article_identifiers, existing_df_urls=
                 href = link_info.get('href')
                 if not href:
                     continue
+
+                # Convert relative URLs to absolute URLs
+                href = urljoin(seed_url, href)
+
+                # Extract domain from the absolute URL
                 domain = urlparse(href).netloc
+
+                # Apply article regex pattern for the domain
                 pattern = article_identifiers.get(domain)
                 if pattern and pattern.search(href):
                     links_articles.append(href)
 
+    # Remove duplicates or already existing URLs
     if existing_df_urls is not None:
         links_articles = [url for url in links_articles if url not in existing_df_urls]
 
     print(f"Found {len(links_articles)} new article links")
     return links_articles
+
 
 # Helper function to handle fallback selectors
 def select_first(soup, selectors, multiple=False):
