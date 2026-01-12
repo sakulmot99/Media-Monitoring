@@ -236,7 +236,7 @@ def create_dash_app():
                          category_orders={'type': ['Media Mentions', 'Election Results']},
                          labels={'percentage': 'Percentage (%)', 'party': 'Party', 'type': 'Source'},
                          title="Comparison: Media Mentions vs. Election Results (%)")
-            fig.update_layout(yaxis=dict(range=[0, 100]), legend_title_text="Source")
+            fig.update_layout(yaxis=dict(range=[0, 60]), legend_title_text="Source")
 
         return apply_font(fig)
 
