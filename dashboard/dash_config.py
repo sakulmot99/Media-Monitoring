@@ -17,7 +17,7 @@ COLOR_CODING = {
 # ----------------------------
 # Visualization start date
 # ----------------------------
-VIS_START_DATE = pd.to_datetime("2025-08-01")
+VIS_START_DATE = pd.to_datetime("2026-01-01")
 
 # ----------------------------
 # Election result DataFrame
