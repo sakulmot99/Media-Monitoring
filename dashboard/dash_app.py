@@ -225,7 +225,7 @@ def create_dash_app():
                 'marginBottom': '40px'
             })
         ])
-
+    ])
 
     # --- Callbacks ---
     @app.callback(
