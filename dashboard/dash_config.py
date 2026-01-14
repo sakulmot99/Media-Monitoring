@@ -76,11 +76,16 @@ TEXT_CONFIG = {
     },
     "talkshows": {
         "total_title": "Total Political Party Mentions in German Talkshows",
-        "total_description": "Explore mentions of political parties in German talkshows from 2017 to 2025.",
+        "total_description": (
+            "Explore mentions of political parties in German talkshows from 2017 to 2025."
+        ),
         "evolution_title": "Evolution of Political Party Coverage in Talkshows Over Time",
-        "evolution_description": "Explore how often political parties have been mentioned in talk show discourse between 2017 and 2025. "
-        "Use the controls to view absolute counts or percentages and filter by party or show."
+        "evolution_description": (
+            "Explore how often political parties have been mentioned in talk show discourse between 2017 and 2025. "
+            "Use the controls to view absolute counts or percentages and filter by party or show."
+        )
     }
 }
+
 
 
