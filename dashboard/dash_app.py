@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATASETS_DIR = BASE_DIR / "datasets"
 
 df_online_news = pd.read_csv(DATASETS_DIR / "PARTIES_ANALYSIS.csv")
-df_talkshows = pd.read_csv(DATASETS_DIR / "TALKSHOW_PARTIES_ANALYSIS.csv")
+df_talkshows = pd.read_csv(DATASETS_DIR / "TALKSHOW_PARTY_ANALYSIS.csv")
 
 
 def prepare_df(df: pd.DataFrame) -> pd.DataFrame:
