@@ -122,12 +122,14 @@ def create_dash_app():
             ],
             style={
                 "textAlign": "center",
-                "marginBottom": "30px",
-                "padding": "15px 20px",
-                "borderRadius": "12px",
-                "backgroundColor": "#f3e6ff",  # soft purple
-                "border": "2px solid #b19cd9",  # slightly darker border
+                "marginBottom": "25px",
+                "padding": "20x",
+                "borderRadius": "8x",
+                "backgroundColor": "#white",  
+                "border": "2px solid purple",  
                 "display": "inline-block",  # makes the box fit content neatly
+                "marginLeft": "auto",
+                "marginRight": "auto"
             },
         ),
 
