@@ -101,19 +101,36 @@ def create_dash_app():
             }
         ),
 
-        # --- Dataset selector (ONLY new UI element) ---
-        html.Div([
-            html.Label("Select Type of Media:", style=TEXT_STYLE),
-            dcc.RadioItems(
-                id="dataset-selector",
-                options=[
-                    {"label": "Online News", "value": "news"},
-                    {"label": "Talkshows", "value": "talkshows"}
-                ],
-                value="news",
-                inline=True
-            )
-        ], style={"textAlign": "center", "marginBottom": "25px"}),
+        # --- Dataset selector (highlighted) ---
+        html.Div(
+            [
+                html.Label(
+                    "Select Type of Media:",
+                    style={**TEXT_STYLE, "fontWeight": "bold", "fontSize": "16px"}
+                ),
+                dcc.RadioItems(
+                    id="dataset-selector",
+                    options=[
+                        {"label": "Online News", "value": "news"},
+                        {"label": "Talkshows", "value": "talkshows"}
+                    ],
+                    value="news",
+                    inline=True,
+                    inputStyle={"margin-right": "8px"},  # spacing between radio button and label
+                    labelStyle={"margin-right": "15px"}  # spacing between options
+                ),
+            ],
+            style={
+                "textAlign": "center",
+                "marginBottom": "30px",
+                "padding": "15px 20px",
+                "borderRadius": "12px",
+                "backgroundColor": "#f3e6ff",  # soft purple
+                "border": "2px solid #b19cd9",  # slightly darker border
+                "display": "inline-block",  # makes the box fit content neatly
+            },
+        ),
+
 
         # --- Total Mentions Section ---
         html.Div([
