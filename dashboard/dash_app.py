@@ -115,17 +115,17 @@ def create_dash_app():
         ], style={"textAlign": "center", "marginBottom": "25px"}),
 
         # --- Total Mentions Section ---
-        html.H3(
-            "Total Political Party Mentions in German Media",
-            style={**TEXT_STYLE, 'marginTop': '30px'}
-        ),
-        html.P(
-            "Explore how often political parties have been mentioned in Germany’s major online newspapers since August 2025 "
-            "(Der Spiegel, Die Zeit, Die FAZ, Süddeutsche Zeitung, and Die Bild). "
-            "Use the controls to select which parties and publishers to include, and switch between viewing the Total Mentions by Party "
-            "or the percentage Distribution of Mentions by Party. See at a glance which parties dominate the media conversation!",
-            style={**TEXT_STYLE, 'lineHeight': '1.5'}
-        ),
+        html.Div([
+            html.H3(id="total-title", style={**TEXT_STYLE, 'marginTop': '0'}),
+            html.P(id="total-description", style={**TEXT_STYLE, 'lineHeight': '1.5'})
+        ], style={
+            'border': '2px solid purple',  # purple box
+            'padding': '20px',
+            'borderRadius': '8px',
+            'marginBottom': '40px',
+            'backgroundColor': '#f9f9f9'
+        }),
+
         html.Div([
 
             html.Div([
@@ -168,13 +168,17 @@ def create_dash_app():
         }),
 
         # --- Evolution Over Time Section ---
-        html.H3("Evolution of Political Party Coverage in Online Media Over Time", style=TEXT_STYLE),
-        html.P(
-            "Track how media coverage of political parties has evolved over time. "
-            "Choose whether to view absolute mentions or percentages, and filter by specific parties and publishers "
-            "to see trends and shifts in the media conversation.",
-            style={**TEXT_STYLE, 'lineHeight': '1.5'}
-        ),
+        html.Div([
+            html.H3(id="evolution-title", style=TEXT_STYLE),
+            html.P(id="evolution-description", style={**TEXT_STYLE, 'lineHeight': '1.5'})
+        ], style={
+            'border': '2px solid purple',  # purple box
+            'padding': '20px',
+            'borderRadius': '8px',
+            'marginBottom': '40px',
+            'backgroundColor': '#f9f9f9'
+        }),
+        
         html.Div([
 
             html.Div([
@@ -266,6 +270,23 @@ def create_dash_app():
 
         return apply_font(fig)
 
+    @app.callback(
+        Output('total-title', 'children'),
+        Output('total-description', 'children'),
+        Output('evolution-title', 'children'),
+        Output('evolution-description', 'children'),
+        Input('dataset-selector', 'value')
+        )
+        def update_graph_text(dataset_key):
+            cfg = TEXT_CONFIG[dataset_key]
+            return (
+                cfg['total_title'],
+                cfg['total_description'],
+                cfg['evolution_title'],
+                cfg['evolution_description']
+            )
+
+    
     @app.callback(
         Output('area-chart', 'figure'),
         [
