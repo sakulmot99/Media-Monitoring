@@ -192,21 +192,47 @@ def create_dash_app():
 
                 # Inner grey box
                 html.Div([
+                    # --- Row with Display Mode and Chart Type selectors ---
                     html.Div([
-                        html.Label("Select Display Mode:", style=TEXT_STYLE),
-                        dcc.RadioItems(
-                            id='display-mode',
-                            options=[
-                                {'label': 'Absolute counts', 'value': 'absolute'},
-                                {'label': 'Percentages', 'value': 'percent'}
-                            ],
-                            value='percent',
-                            inline=True
-                        )
-                    ], style={'display': 'flex', 'justifyContent': 'center', 'marginBottom': '15px'}),
+                        # Display Mode (left)
+                        html.Div([
+                            html.Label("Select Display Mode:", style=TEXT_STYLE),
+                            dcc.RadioItems(
+                                id='display-mode',
+                                options=[
+                                    {'label': 'Absolute counts', 'value': 'absolute'},
+                                    {'label': 'Percentages', 'value': 'percent'}
+                                ],
+                                value='percent',
+                                inline=True,
+                                inputStyle={"margin-right": "8px"},
+                                labelStyle={"margin-right": "15px"},
+                                style={"textAlign": "center", "display": "inline-block"}
+                            )
+                        ], style={'flex': '1', 'textAlign': 'center'}),
 
+                        # Chart Type (right)
+                        html.Div([
+                            html.Label("Select Chart Type:", style=TEXT_STYLE),
+                            dcc.RadioItems(
+                                id='chart-type',
+                                options=[
+                                    {'label': 'Area Chart', 'value': 'area'},
+                                    {'label': 'Line Chart', 'value': 'line'}
+                                ],
+                                value='area',
+                                inline=True,
+                                inputStyle={"margin-right": "8px"},
+                                labelStyle={"margin-right": "15px"},
+                                style={"textAlign": "center", "display": "inline-block"}
+                            )
+                        ], style={'flex': '1', 'textAlign': 'center'})
+                    ], style={'display': 'flex', 'justifyContent': 'space-between', 'marginBottom': '15px'}),
+
+                    # --- Graph ---
                     dcc.Graph(id='area-chart'),
 
+                    # --- Publisher & Party selectors ---
                     html.Div([
                         html.Div([
                             html.Label("Select Publishers:", style=TEXT_STYLE),
@@ -312,18 +338,25 @@ def create_dash_app():
             Input('dataset-selector', 'value'),
             Input('area-publisher-selector', 'value'),
             Input('display-mode', 'value'),
-            Input('area-party-selector', 'value')
+            Input('area-party-selector', 'value'),
+            Input('chart-type', 'value')  # new chart type input
         ]
     )
-    def update_area_chart(dataset_key, selected_publishers, display_mode, selected_parties):
+    def update_area_chart(dataset_key, selected_publishers, display_mode, selected_parties, chart_type):
 
         if not selected_publishers or not selected_parties:
-            return px.area(title="Select at least one party and one publisher")
+            # Return placeholder depending on selected chart type
+            if chart_type == 'line':
+                return px.line(title="Select at least one party and one publisher")
+            else:
+                return px.area(title="Select at least one party and one publisher")
 
         df_visibility = get_active_df(dataset_key)
         df_filtered = df_visibility[df_visibility['publisher'].isin(selected_publishers)]
-        # Getting aggregating config
+
+        # Aggregation config
         agg_cfg = TIME_AGGREGATION[dataset_key]
+
         # Resample according to dataset
         df_resampled = (
             df_filtered
@@ -335,19 +368,13 @@ def create_dash_app():
 
         df_grouped = df_resampled
 
-        # Rolling averages as specified in config
+        # Rolling averages
         window = agg_cfg["rolling_window"]
-
         for p in selected_parties:
             col = f"{p}_total"
-            df_grouped[col] = (
-                df_grouped[col]
-                .rolling(window=window, min_periods=1)
-                .mean()
-            )
+            df_grouped[col] = df_grouped[col].rolling(window=window, min_periods=1).mean()
 
-
-
+        # Convert to percentages if needed
         if display_mode == 'percent':
             df_grouped['total'] = df_grouped[[f"{p}_total" for p in selected_parties]].sum(axis=1)
             for p in selected_parties:
@@ -357,19 +384,24 @@ def create_dash_app():
             df_long = df_grouped.melt('week_start', [f"{p}_total" for p in selected_parties], 'party', 'value')
             df_long['party'] = df_long['party'].str.replace('_total', '')
 
-        fig = px.area(df_long, x='week_start', y='value', color='party',
-                      color_discrete_map=color_coding)
+        # Choose chart type
+        if chart_type == 'line':
+            fig = px.line(df_long, x='week_start', y='value', color='party',
+                          color_discrete_map=color_coding)
+        else:
+            fig = px.area(df_long, x='week_start', y='value', color='party',
+                          color_discrete_map=color_coding)
 
+        # Update x-axis
         fig.update_xaxes(
-                tickformat=agg_cfg["date_format"],
-                title_text=agg_cfg["label"],
-                showgrid=False
+            tickformat=agg_cfg["date_format"],
+            title_text=agg_cfg["label"],
+            showgrid=False
         )
-
         if dataset_key == "news":
-            fig.update_xaxes(dtick="M1")  # one tick per month, weekly data
-
+            fig.update_xaxes(dtick="M1")  # one tick per month
 
         return apply_font(fig)
+
 
     return app
