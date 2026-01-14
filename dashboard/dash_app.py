@@ -339,13 +339,12 @@ def create_dash_app():
             Input('area-publisher-selector', 'value'),
             Input('display-mode', 'value'),
             Input('area-party-selector', 'value'),
-            Input('chart-type', 'value')  # new chart type input
+            Input('chart-type', 'value')
         ]
     )
     def update_area_chart(dataset_key, selected_publishers, display_mode, selected_parties, chart_type):
 
         if not selected_publishers or not selected_parties:
-            # Return placeholder depending on selected chart type
             if chart_type == 'line':
                 return px.line(title="Select at least one party and one publisher")
             else:
@@ -384,13 +383,42 @@ def create_dash_app():
             df_long = df_grouped.melt('week_start', [f"{p}_total" for p in selected_parties], 'party', 'value')
             df_long['party'] = df_long['party'].str.replace('_total', '')
 
-        # Choose chart type
+        # --- Chart type logic ---
         if chart_type == 'line':
-            fig = px.line(df_long, x='week_start', y='value', color='party',
-                          color_discrete_map=color_coding)
-        else:
-            fig = px.area(df_long, x='week_start', y='value', color='party',
-                          color_discrete_map=color_coding)
+            # Convert HEX colors to RGBA with low opacity for muted lines
+            muted_color_map = {}
+            for p in selected_parties:
+                hex_color = color_coding.get(p, "#888888")
+                r = int(hex_color[1:3], 16)
+                g = int(hex_color[3:5], 16)
+                b = int(hex_color[5:7], 16)
+                muted_color_map[p] = f"rgba({r},{g},{b},0.3)"  # low opacity
+
+            fig = px.line(
+                df_long,
+                x='week_start',
+                y='value',
+                color='party',
+                color_discrete_map=muted_color_map
+            )
+
+            # All lines start muted
+            fig.update_traces(line=dict(width=2), opacity=0.3)
+
+            # Clicking a party in legend highlights it
+            fig.update_layout(
+                legend_itemclick="toggleothers",
+                legend_itemdoubleclick="toggle"
+            )
+
+        else:  # area chart
+            fig = px.area(
+                df_long,
+                x='week_start',
+                y='value',
+                color='party',
+                color_discrete_map=color_coding
+            )
 
         # Update x-axis
         fig.update_xaxes(
@@ -402,6 +430,7 @@ def create_dash_app():
             fig.update_xaxes(dtick="M1")  # one tick per month
 
         return apply_font(fig)
+
 
 
     return app
