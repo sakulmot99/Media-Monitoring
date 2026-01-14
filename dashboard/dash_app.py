@@ -13,7 +13,8 @@ from dashboard.dash_config import (
     DF_ELECTION,
     FONT_FAMILY,
     TEXT_COLOR,
-    TIME_AGGREGATION
+    TIME_AGGREGATION,
+    TEXT_CONFIG
 )
 
 # --- Config Objects Assigning ---
