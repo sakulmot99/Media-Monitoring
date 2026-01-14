@@ -13,6 +13,7 @@ from dashboard.dash_config import (
     DF_ELECTION,
     FONT_FAMILY,
     TEXT_COLOR
+    TIME_AGGREGATION
 )
 
 # --- Config Objects Assigning ---
@@ -269,8 +270,31 @@ def create_dash_app():
 
         df_visibility = get_active_df(dataset_key)
         df_filtered = df_visibility[df_visibility['publisher'].isin(selected_publishers)]
+        # Getting aggregating config
+        agg_cfg = TIME_AGGREGATION[dataset_key]
+        # Resample according to dataset
+        df_resampled = (
+            df_filtered
+                .set_index("week_start")
+                .resample(agg_cfg["freq"])[[f"{p}_total" for p in selected_parties]]
+                .sum()
+                .reset_index()
+        )
 
-        df_grouped = df_filtered.groupby('week_start')[[f"{p}_total" for p in selected_parties]].sum().reset_index()
+        df_grouped = df_resampled
+
+        # Rolling averages as specified in config
+        window = agg_cfg["rolling_window"]
+
+        for p in selected_parties:
+            col = f"{p}_total"
+            df_grouped[col] = (
+                df_grouped[col]
+                .rolling(window=window, min_periods=1)
+                .mean()
+            )
+
+
 
         if display_mode == 'percent':
             df_grouped['total'] = df_grouped[[f"{p}_total" for p in selected_parties]].sum(axis=1)
@@ -283,6 +307,16 @@ def create_dash_app():
 
         fig = px.area(df_long, x='week_start', y='value', color='party',
                       color_discrete_map=color_coding)
+
+        fig.update_xaxes(
+                tickformat=agg_cfg["date_format"],
+                title_text=agg_cfg["label"],
+                showgrid=False
+        )
+
+        if dataset_key == "news":
+            fig.update_xaxes(dtick="M1")  # one tick per month, weekly data
+
 
         return apply_font(fig)
 
