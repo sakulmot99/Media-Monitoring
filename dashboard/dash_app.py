@@ -8,7 +8,8 @@ from pathlib import Path
 # Load Config Parameters
 from dashboard.dash_config import (
     COLOR_CODING,
-    VIS_START_DATE,
+    VIS_START_DATE_TALKS,
+    VIS_START_DATE_ONLINE,
     DF_ELECTION,
     FONT_FAMILY,
     TEXT_COLOR
@@ -17,7 +18,8 @@ from dashboard.dash_config import (
 # --- Config Objects Assigning ---
 color_coding = COLOR_CODING
 df_election = DF_ELECTION
-vis_start_date = VIS_START_DATE
+vis_start_date_online = VIS_START_DATE_ONLINE
+vis_start_date_talks = VIS_START_DATE_TALKS
 
 # Global text style for HTML elements
 TEXT_STYLE = {"fontFamily": FONT_FAMILY, "color": TEXT_COLOR}
@@ -36,8 +38,8 @@ def prepare_df(df: pd.DataFrame, start_date: pd.Timestamp) -> pd.DataFrame:
     df = df[df["week_start"] >= start_date].reset_index(drop=True)
     return df
 
-df_online_news = prepare_df(df_online_news, VIS_START_DATE_ONLINE)
-df_talkshows = prepare_df(df_talkshows, VIS_START_DATE_TALKS)
+df_online_news = prepare_df(df_online_news, vis_start_date_online)
+df_talkshows = prepare_df(df_talkshows, vis_start_date_talks)
 
 # Use online news as default (matches current behavior)
 df_visibility = df_talkshows
