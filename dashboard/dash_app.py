@@ -77,20 +77,32 @@ def create_dash_app():
 
         # --- Header ---
         html.H1(
-            "Political Party Coverage in German Online News",
+            "Political Party Coverage in German Media",
             style={**TEXT_STYLE, 'textAlign': 'center'}
         ),
         html.P(
-            "The news we consume shapes what we think about and how we see the world. "
-            "Coverage of political parties is no exception. When some parties dominate the headlines, "
-            "this can influence public perception, opinions, and ultimately voting behavior. "
-            "This dashboard tracks how often political parties appear in major German online news, helping you see media bias.",
+            "The news we consume shapes how we think about politics and how we see the world. "
+            "Coverage of political parties is no exception: when some parties dominate the headlines, "
+            "this can influence public attention, perceptions, and ultimately voting behavior. "
+            "This dashboard tracks how often political parties appear in German media, helping to make patterns of media visibility more transparent. "
             style={**TEXT_STYLE, 'lineHeight': '1.5', 'textAlign': 'center', 'margin': '20px 0'}
+        ),
+
+        html.P(
+            "Note: This dashboard is a work in progress. It currently includes online news coverage "
+            "(since January 2026) and political talk shows (from 2017 to 2025). We are continuously expanding "
+            "the project by adding more time periods, additional media outlets, and—looking ahead—social media coverage.",
+            style={
+                **TEXT_STYLE,
+                'fontStyle': 'italic',
+                'textAlign': 'center',
+                'margin': '0 0 20px 0'
+            }
         ),
 
         # --- Dataset selector (ONLY new UI element) ---
         html.Div([
-            html.Label("Select Data Source:", style=TEXT_STYLE),
+            html.Label("Select Type of Media:", style=TEXT_STYLE),
             dcc.RadioItems(
                 id="dataset-selector",
                 options=[
