@@ -84,7 +84,7 @@ def create_dash_app():
             "The news we consume shapes how we think about politics and how we see the world. "
             "Coverage of political parties is no exception: when some parties dominate the headlines, "
             "this can influence public attention, perceptions, and ultimately voting behavior. "
-            "This dashboard tracks how often political parties appear in German media, helping to make patterns of media visibility more transparent. "
+            "This dashboard tracks how often political parties appear in German media, helping to make patterns of media visibility more transparent. ",
             style={**TEXT_STYLE, 'lineHeight': '1.5', 'textAlign': 'center', 'margin': '20px 0'}
         ),
 
