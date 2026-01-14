@@ -52,8 +52,8 @@ TIME_AGGREGATION = {
         "freq": "MS",
         "label": "Month", # Monthly
         "date_format": "%Y-%m",
-        "rolling_window": 3,      # 3-month rolling average
-        "rolling_label": "3-month rolling average"
+        "rolling_window": 5,      # 3-month rolling average
+        "rolling_label": "5-month rolling average"
     }
 }
 
