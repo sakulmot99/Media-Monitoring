@@ -102,11 +102,12 @@ def create_dash_app():
         ),
 
         # --- Dataset selector (highlighted) ---
+        # --- Dataset selector (centered bold title, no box) ---
         html.Div(
             [
-                html.Label(
+                html.Div(
                     "Select Type of Media:",
-                    style={**TEXT_STYLE, "fontWeight": "bold", "fontSize": "16px"}
+                    style={**TEXT_STYLE, "fontWeight": "bold", "fontSize": "16px", "textAlign": "center", "marginBottom": "10px"}
                 ),
                 dcc.RadioItems(
                     id="dataset-selector",
@@ -116,22 +117,14 @@ def create_dash_app():
                     ],
                     value="news",
                     inline=True,
-                    inputStyle={"margin-right": "8px"},  # spacing between radio button and label
-                    labelStyle={"margin-right": "15px"}  # spacing between options
+                    inputStyle={"margin-right": "8px"},
+                    labelStyle={"margin-right": "15px"},
+                    style={"textAlign": "center", "display": "inline-block", "width": "auto"}
                 ),
             ],
-            style={
-                "textAlign": "center",
-                "marginBottom": "25px",
-                "padding": "20x",
-                "borderRadius": "8x",
-                "backgroundColor": "#white",  
-                "border": "2px solid purple",  
-                "display": "inline-block",  # makes the box fit content neatly
-                "marginLeft": "auto",
-                "marginRight": "auto"
-            },
+            style={"textAlign": "center", "marginBottom": "25px"}
         ),
+
 
 
         # --- Total Mentions Section ---
