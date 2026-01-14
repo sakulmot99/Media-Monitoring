@@ -42,14 +42,18 @@ TEXT_COLOR = "#333333"              # default text color
 
 TIME_AGGREGATION = {
     "news": {
-        "freq": "W-MON",          # weekly, week starts Monday
-        "label": "Week",
-        "date_format": "%Y-%m-%d"
+        "freq": "W-MON",
+        "label": "Week", # Weekly
+        "date_format": "%Y-%m-%d",
+        "rolling_window": 3,      
+        "rolling_label": "3-week rolling average"
     },
     "talkshows": {
-        "freq": "MS",             # month start
-        "label": "Month",
-        "date_format": "%Y-%m"
+        "freq": "MS",
+        "label": "Month", # Monthly
+        "date_format": "%Y-%m",
+        "rolling_window": 3,      # 3-month rolling average
+        "rolling_label": "3-month rolling average"
     }
 }
 
