@@ -278,14 +278,14 @@ def create_dash_app():
         Output('evolution-description', 'children'),
         Input('dataset-selector', 'value')
         )
-        def update_graph_text(dataset_key):
-            cfg = TEXT_CONFIG[dataset_key]
-            return (
-                cfg['total_title'],
-                cfg['total_description'],
-                cfg['evolution_title'],
-                cfg['evolution_description']
-            )
+    def update_graph_text(dataset_key):
+        cfg = TEXT_CONFIG[dataset_key]
+        return (
+            cfg['total_title'],
+            cfg['total_description'],
+            cfg['evolution_title'],
+            cfg['evolution_description']
+        )
 
     
     @app.callback(
