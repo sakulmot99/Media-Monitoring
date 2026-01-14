@@ -12,7 +12,7 @@ from dashboard.dash_config import (
     VIS_START_DATE_ONLINE,
     DF_ELECTION,
     FONT_FAMILY,
-    TEXT_COLOR
+    TEXT_COLOR,
     TIME_AGGREGATION
 )
 
