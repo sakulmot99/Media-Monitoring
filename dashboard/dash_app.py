@@ -30,15 +30,14 @@ df_online_news = pd.read_csv(DATASETS_DIR / "PARTIES_ANALYSIS.csv")
 df_talkshows = pd.read_csv(DATASETS_DIR / "TALKSHOW_PARTY_ANALYSIS.csv")
 
 
-def prepare_df(df: pd.DataFrame) -> pd.DataFrame:
+def prepare_df(df: pd.DataFrame, start_date: pd.Timestamp) -> pd.DataFrame:
     df = df.copy()
     df["week_start"] = pd.to_datetime(df["week_start"], errors="coerce")
-    df = df[df["week_start"] >= VIS_START_DATE].reset_index(drop=True)
+    df = df[df["week_start"] >= start_date].reset_index(drop=True)
     return df
 
-
-df_online_news = prepare_df(df_online_news)
-df_talkshows = prepare_df(df_talkshows)
+df_online_news = prepare_df(df_online_news, VIS_START_DATE_ONLINE)
+df_talkshows = prepare_df(df_talkshows, VIS_START_DATE_TALKS)
 
 # Use online news as default (matches current behavior)
 df_visibility = df_talkshows
