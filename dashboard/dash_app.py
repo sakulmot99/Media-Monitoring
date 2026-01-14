@@ -117,109 +117,115 @@ def create_dash_app():
 
         # --- Total Mentions Section ---
         html.Div([
-            html.H3(id="total-title", style={**TEXT_STYLE, 'marginTop': '0'}),
-            html.P(id="total-description", style={**TEXT_STYLE, 'lineHeight': '1.5'})
-        ], style={
-            'border': '2px solid purple',  # purple box
-            'padding': '20px',
-            'borderRadius': '8px',
-            'marginBottom': '40px',
-            'backgroundColor': '#f9f9f9'
-        }),
-
-        html.Div([
-
+            # Outer purple box
             html.Div([
-                html.Label("Select Graph:", style=TEXT_STYLE),
-                dcc.RadioItems(
-                    id='graph-selector',
-                    options=[
-                        {'label': 'Total Mentions by Party', 'value': 'total'},
-                        {'label': 'Percentage Distribution of Mentions', 'value': 'percentage'}
-                    ],
-                    value='total',
-                    inline=True
-                )
-            ], style={'display': 'flex', 'justifyContent': 'center', 'margin-bottom': '15px'}),
+                html.H3(id="total-title", style={**TEXT_STYLE, 'marginTop': '0'}),
+                html.P(id="total-description", style={**TEXT_STYLE, 'lineHeight': '1.5'}),
 
-            dcc.Graph(id='main-graph'),
-
-            html.Div([
+                # Inner grey box
                 html.Div([
-                    html.Label("Select Publishers:", style=TEXT_STYLE),
-                    dcc.Checklist(id='publisher-selector', inline=True)
-                ], style={'flex': '1'}),
+                    html.Div([
+                        html.Label("Select Graph:", style=TEXT_STYLE),
+                        dcc.RadioItems(
+                            id='graph-selector',
+                            options=[
+                                {'label': 'Total Mentions by Party', 'value': 'total'},
+                                {'label': 'Percentage Distribution of Mentions', 'value': 'percentage'}
+                            ],
+                            value='total',
+                            inline=True
+                        )
+                    ], style={'display': 'flex', 'justifyContent': 'center', 'marginBottom': '15px'}),
 
-                html.Div([
-                    html.Label("Select Parties:", style=TEXT_STYLE),
-                    dcc.Checklist(
-                        id='party-selector',
-                        options=[{'label': p, 'value': p} for p in party_columns],
-                        value=party_columns,
-                        inline=True
-                    )
-                ], style={'flex': '1'})
-            ], style={'display': 'flex', 'justifyContent': 'space-between'})
-        ], style={
-            'border': '1px solid lightgrey',
-            'padding': '20px',
-            'borderRadius': '8px',
-            'marginBottom': '40px',
-            'backgroundColor': '#f9f9f9'
-        }),
+                    dcc.Graph(id='main-graph'),
+
+                    html.Div([
+                        html.Div([
+                            html.Label("Select Publishers:", style=TEXT_STYLE),
+                            dcc.Checklist(id='publisher-selector', inline=True)
+                        ], style={'flex': '1'}),
+
+                        html.Div([
+                            html.Label("Select Parties:", style=TEXT_STYLE),
+                            dcc.Checklist(
+                                id='party-selector',
+                                options=[{'label': p, 'value': p} for p in party_columns],
+                                value=party_columns,
+                                inline=True
+                            )
+                        ], style={'flex': '1'})
+                    ], style={'display': 'flex', 'justifyContent': 'space-between'})
+                ], style={
+                    'border': '1px solid lightgrey',
+                    'padding': '20px',
+                    'borderRadius': '8px',
+                    'marginBottom': '40px',
+                    'backgroundColor': '#f9f9f9'
+                })
+
+            ], style={
+                'border': '2px solid purple',
+                'padding': '20px',
+                'borderRadius': '8px',
+                'marginBottom': '40px'
+            })
+        ]),
 
         # --- Evolution Over Time Section ---
         html.Div([
-            html.H3(id="evolution-title", style=TEXT_STYLE),
-            html.P(id="evolution-description", style={**TEXT_STYLE, 'lineHeight': '1.5'})
-        ], style={
-            'border': '2px solid purple',  # purple box
-            'padding': '20px',
-            'borderRadius': '8px',
-            'marginBottom': '40px',
-            'backgroundColor': '#f9f9f9'
-        }),
-        
-        html.Div([
-
+            # Outer purple box
             html.Div([
-                html.Label("Select Display Mode:", style=TEXT_STYLE),
-                dcc.RadioItems(
-                    id='display-mode',
-                    options=[
-                        {'label': 'Absolute counts', 'value': 'absolute'},
-                        {'label': 'Percentages', 'value': 'percent'}
-                    ],
-                    value='percent',
-                    inline=True
-                )
-            ], style={'display': 'flex', 'justifyContent': 'center', 'marginBottom': '15px'}),
+                html.H3(id="evolution-title", style=TEXT_STYLE),
+                html.P(id="evolution-description", style={**TEXT_STYLE, 'lineHeight': '1.5'}),
 
-            dcc.Graph(id='area-chart'),
-
-            html.Div([
+                # Inner grey box
                 html.Div([
-                    html.Label("Select Publishers:", style=TEXT_STYLE),
-                    dcc.Checklist(id='area-publisher-selector', inline=True)
-                ], style={'flex': '1'}),
+                    html.Div([
+                        html.Label("Select Display Mode:", style=TEXT_STYLE),
+                        dcc.RadioItems(
+                            id='display-mode',
+                            options=[
+                                {'label': 'Absolute counts', 'value': 'absolute'},
+                                {'label': 'Percentages', 'value': 'percent'}
+                            ],
+                            value='percent',
+                            inline=True
+                        )
+                    ], style={'display': 'flex', 'justifyContent': 'center', 'marginBottom': '15px'}),
 
-                html.Div([
-                    html.Label("Select Parties:", style=TEXT_STYLE),
-                    dcc.Checklist(
-                        id='area-party-selector',
-                        options=[{'label': p, 'value': p} for p in party_columns],
-                        value=party_columns,
-                        inline=True
-                    )
-                ], style={'flex': '1'})
-            ], style={'display': 'flex', 'justifyContent': 'space-between'})
-        ], style={
-            'border': '1px solid lightgrey',
-            'padding': '20px',
-            'borderRadius': '8px',
-            'backgroundColor': '#f9f9f9'
-        })
-    ])
+                    dcc.Graph(id='area-chart'),
+
+                    html.Div([
+                        html.Div([
+                            html.Label("Select Publishers:", style=TEXT_STYLE),
+                            dcc.Checklist(id='area-publisher-selector', inline=True)
+                        ], style={'flex': '1'}),
+
+                        html.Div([
+                            html.Label("Select Parties:", style=TEXT_STYLE),
+                            dcc.Checklist(
+                                id='area-party-selector',
+                                options=[{'label': p, 'value': p} for p in party_columns],
+                                value=party_columns,
+                                inline=True
+                            )
+                        ], style={'flex': '1'})
+                    ], style={'display': 'flex', 'justifyContent': 'space-between'})
+                ], style={
+                    'border': '1px solid lightgrey',
+                    'padding': '20px',
+                    'borderRadius': '8px',
+                    'backgroundColor': '#f9f9f9'
+                })
+
+            ], style={
+                'border': '2px solid purple',
+                'padding': '20px',
+                'borderRadius': '8px',
+                'marginBottom': '40px'
+            })
+        ])
+
 
     # --- Callbacks ---
     @app.callback(
