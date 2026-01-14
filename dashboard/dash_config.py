@@ -35,3 +35,21 @@ DF_ELECTION = pd.DataFrame({
 # ----------------------------
 FONT_FAMILY = "Segoe UI, sans-serif"   # global font
 TEXT_COLOR = "#333333"              # default text color
+
+#-----------------------------
+# Time Aggregation per Dataset
+#-----------------------------
+
+TIME_AGGREGATION = {
+    "news": {
+        "freq": "W-MON",          # weekly, week starts Monday
+        "label": "Week",
+        "date_format": "%Y-%m-%d"
+    },
+    "talkshows": {
+        "freq": "MS",             # month start
+        "label": "Month",
+        "date_format": "%Y-%m"
+    }
+}
+
