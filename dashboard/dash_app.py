@@ -385,33 +385,14 @@ def create_dash_app():
 
         # --- Chart type logic ---
         if chart_type == 'line':
-            # Convert HEX colors to RGBA with low opacity for muted lines
-            muted_color_map = {}
-            for p in selected_parties:
-                hex_color = color_coding.get(p, "#888888")
-                r = int(hex_color[1:3], 16)
-                g = int(hex_color[3:5], 16)
-                b = int(hex_color[5:7], 16)
-                muted_color_map[p] = f"rgba({r},{g},{b},0.3)"  # low opacity
-
             fig = px.line(
                 df_long,
                 x='week_start',
                 y='value',
                 color='party',
-                color_discrete_map=muted_color_map
+                color_discrete_map=color_coding
             )
-
-            # All lines start muted
-            fig.update_traces(line=dict(width=2), opacity=0.3)
-
-            # Clicking a party in legend highlights it
-            fig.update_layout(
-                legend_itemclick="toggleothers",
-                legend_itemdoubleclick="toggle"
-            )
-
-        else:  # area chart
+        else:
             fig = px.area(
                 df_long,
                 x='week_start',
