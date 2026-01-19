@@ -355,7 +355,7 @@ def create_dash_app():
         )
 
         fig.update_traces(
-            opacity=0.15,
+            opacity=0.8,
             selected=dict(opacity=1, line=dict(width=3)),
             unselected=dict(opacity=0.15, line=dict(width=1))
         )
