@@ -45,8 +45,8 @@ TIME_AGGREGATION = {
         "freq": "W-MON",
         "label": "Week", # Weekly
         "date_format": "%Y-%m-%d",
-        "rolling_window": 3,      
-        "rolling_label": "3-week rolling average"
+        "rolling_window": 2,      
+        "rolling_label": "2-week rolling average"
     },
     "talkshows": {
         "freq": "MS",
