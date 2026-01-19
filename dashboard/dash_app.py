@@ -346,6 +346,12 @@ def create_dash_app():
             df_long = df_grouped.melt('week_start', [f"{p}_total" for p in selected_parties], 'party', 'value')
             df_long['party'] = df_long['party'].str.replace('_total', '')
 
+        df_long['value'] = pd.to_numeric(df_long['value'], errors='coerce')          # ensure numeric
+        df_long['week_start'] = pd.to_datetime(df_long['week_start'], errors='coerce') # ensure datetime
+
+        # Drop rows where value is NaN
+        df_long = df_long.dropna(subset=['value', 'week_start'])
+
         fig = px.line(
             df_long,
             x='week_start',
