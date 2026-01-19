@@ -102,7 +102,6 @@ def create_dash_app():
         ),
 
         # --- Dataset selector (highlighted) ---
-        # --- Dataset selector (centered bold title, no box) ---
         html.Div(
             [
                 html.Div(
@@ -125,16 +124,12 @@ def create_dash_app():
             style={"textAlign": "center", "marginBottom": "25px"}
         ),
 
-
-
         # --- Total Mentions Section ---
         html.Div([
-            # Outer purple box
             html.Div([
                 html.H3(id="total-title", style={**TEXT_STYLE, 'marginTop': '0'}),
                 html.P(id="total-description", style={**TEXT_STYLE, 'lineHeight': '1.5'}),
 
-                # Inner grey box
                 html.Div([
                     html.Div([
                         html.Label("Select Graph:", style=TEXT_STYLE),
@@ -185,16 +180,12 @@ def create_dash_app():
 
         # --- Evolution Over Time Section ---
         html.Div([
-            # Outer purple box
             html.Div([
                 html.H3(id="evolution-title", style=TEXT_STYLE),
                 html.P(id="evolution-description", style={**TEXT_STYLE, 'lineHeight': '1.5'}),
 
-                # Inner grey box
                 html.Div([
-                    # --- Row with Display Mode and Chart Type selectors ---
                     html.Div([
-                        # Display Mode (left)
                         html.Div([
                             html.Label("Select Display Mode:", style=TEXT_STYLE),
                             dcc.RadioItems(
@@ -210,39 +201,20 @@ def create_dash_app():
                                 style={"textAlign": "center", "display": "inline-block"}
                             )
                         ], style={'flex': '1', 'textAlign': 'center'}),
-
-                        # Chart Type (right)
-                        html.Div([
-                            html.Label("Select Chart Type:", style=TEXT_STYLE),
-                            dcc.RadioItems(
-                                id='chart-type',
-                                options=[
-                                    {'label': 'Area Chart', 'value': 'area'},
-                                    {'label': 'Line Chart', 'value': 'line'}
-                                ],
-                                value='area',
-                                inline=True,
-                                inputStyle={"margin-right": "8px"},
-                                labelStyle={"margin-right": "15px"},
-                                style={"textAlign": "center", "display": "inline-block"}
-                            )
-                        ], style={'flex': '1', 'textAlign': 'center'})
                     ], style={'display': 'flex', 'justifyContent': 'space-between', 'marginBottom': '15px'}),
 
-                    # --- Graph ---
-                    dcc.Graph(id='area-chart'),
+                    dcc.Graph(id='line-chart'),
 
-                    # --- Publisher & Party selectors ---
                     html.Div([
                         html.Div([
                             html.Label("Select Publishers:", style=TEXT_STYLE),
-                            dcc.Checklist(id='area-publisher-selector', inline=True)
+                            dcc.Checklist(id='line-publisher-selector', inline=True)
                         ], style={'flex': '1'}),
 
                         html.Div([
                             html.Label("Select Parties:", style=TEXT_STYLE),
                             dcc.Checklist(
-                                id='area-party-selector',
+                                id='line-party-selector',
                                 options=[{'label': p, 'value': p} for p in party_columns],
                                 value=party_columns,
                                 inline=True
@@ -269,8 +241,8 @@ def create_dash_app():
     @app.callback(
         Output('publisher-selector', 'options'),
         Output('publisher-selector', 'value'),
-        Output('area-publisher-selector', 'options'),
-        Output('area-publisher-selector', 'value'),
+        Output('line-publisher-selector', 'options'),
+        Output('line-publisher-selector', 'value'),
         Input('dataset-selector', 'value')
     )
     def update_publishers(dataset_key):
@@ -331,32 +303,25 @@ def create_dash_app():
             cfg['evolution_description']
         )
 
-    
     @app.callback(
-        Output('area-chart', 'figure'),
+        Output('line-chart', 'figure'),
         [
             Input('dataset-selector', 'value'),
-            Input('area-publisher-selector', 'value'),
+            Input('line-publisher-selector', 'value'),
             Input('display-mode', 'value'),
-            Input('area-party-selector', 'value'),
-            Input('chart-type', 'value')
+            Input('line-party-selector', 'value'),
         ]
     )
-    def update_area_chart(dataset_key, selected_publishers, display_mode, selected_parties, chart_type):
+    def update_line_chart(dataset_key, selected_publishers, display_mode, selected_parties):
 
         if not selected_publishers or not selected_parties:
-            if chart_type == 'line':
-                return px.line(title="Select at least one party and one publisher")
-            else:
-                return px.area(title="Select at least one party and one publisher")
+            return px.line(title="Select at least one party and one publisher")
 
         df_visibility = get_active_df(dataset_key)
         df_filtered = df_visibility[df_visibility['publisher'].isin(selected_publishers)]
 
-        # Aggregation config
         agg_cfg = TIME_AGGREGATION[dataset_key]
 
-        # Resample according to dataset
         df_resampled = (
             df_filtered
                 .set_index("week_start")
@@ -367,13 +332,11 @@ def create_dash_app():
 
         df_grouped = df_resampled
 
-        # Rolling averages
         window = agg_cfg["rolling_window"]
         for p in selected_parties:
             col = f"{p}_total"
             df_grouped[col] = df_grouped[col].rolling(window=window, min_periods=1).mean()
 
-        # Convert to percentages if needed
         if display_mode == 'percent':
             df_grouped['total'] = df_grouped[[f"{p}_total" for p in selected_parties]].sum(axis=1)
             for p in selected_parties:
@@ -383,35 +346,29 @@ def create_dash_app():
             df_long = df_grouped.melt('week_start', [f"{p}_total" for p in selected_parties], 'party', 'value')
             df_long['party'] = df_long['party'].str.replace('_total', '')
 
-        # --- Chart type logic ---
-        if chart_type == 'line':
-            fig = px.line(
-                df_long,
-                x='week_start',
-                y='value',
-                color='party',
-                color_discrete_map=color_coding
-            )
-        else:
-            fig = px.area(
-                df_long,
-                x='week_start',
-                y='value',
-                color='party',
-                color_discrete_map=color_coding
-            )
+        fig = px.line(
+            df_long,
+            x='week_start',
+            y='value',
+            color='party',
+            color_discrete_map=color_coding
+        )
 
-        # Update x-axis
+        fig.update_traces(
+            opacity=0.15,
+            selected=dict(opacity=1, line=dict(width=3)),
+            unselected=dict(opacity=0.15, line=dict(width=1))
+        )
+
         fig.update_xaxes(
             tickformat=agg_cfg["date_format"],
             title_text=agg_cfg["label"],
             showgrid=False
         )
+
         if dataset_key == "news":
-            fig.update_xaxes(dtick="M1")  # one tick per month
+            fig.update_xaxes(dtick="M1")
 
         return apply_font(fig)
-
-
 
     return app
